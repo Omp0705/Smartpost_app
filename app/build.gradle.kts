@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+
+
 }
 
 android {
@@ -19,12 +22,17 @@ android {
     }
 
     buildTypes {
+        val ipAddress = "192.168.37.27"
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String","BASE_URL","\"http://{$ipAddress}:8080\"")
+        }
+        debug {
+            buildConfigField("String","BASE_URL","\"http://{$ipAddress}:8080\"")
         }
     }
     compileOptions {
@@ -36,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -58,21 +67,24 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("androidx.core:core-splashscreen:1.0.0")
-    val nav_version = "2.9.5"
-    // Core Koin
-    implementation("io.insert-koin:koin-core:4.0.0")
 
-    // Android (includes ViewModel + lifecycle scope)
-    implementation("io.insert-koin:koin-android:4.0.0")
-
-    // Compose integration
-    implementation("io.insert-koin:koin-androidx-compose:4.0.0")
-
-    // Optional for Ktor integration
-    implementation("io.insert-koin:koin-ktor:4.0.0")
-    implementation("io.insert-koin:koin-logger-slf4j:4.0.0")
 
     implementation(libs.androidx.navigation.compose)
+    // Koin BOM (optional but recommended) so you don’t have to add version numbers everywhere
+    implementation(platform("io.insert-koin:koin-bom:4.1.1"))  // latest stable as of now :contentReference[oaicite:1]{index=1}
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+    implementation("io.insert-koin:koin-androidx-compose")
+    implementation("io.insert-koin:koin-compose-viewmodel")
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
+    implementation("io.ktor:ktor-client-logging:2.3.12")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+
+
 
 
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -20,6 +21,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
@@ -71,22 +73,26 @@ fun AuthTextField(
     imeAction: ImeAction = ImeAction.Next,
     onImeAction: () -> Unit = {},
     error: String? = null,
+    supportingText: String? = null, // NEW: optional helper/support text
     enabled: Boolean = true
 ) {
+    val supportOrError = error ?: supportingText
+
     Column(modifier = modifier) {
-        OutlinedTextField (
+        OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = {
                 Text(
-                text = label,
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    color = textFieldColor
+                    text = label,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.manrope_semibold)),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        color = textFieldColor
+                    )
                 )
-            )},
+            },
             leadingIcon = leadingIcon?.let { icon ->
                 {
                     Icon(
@@ -100,7 +106,10 @@ fun AuthTextField(
                 {
                     IconButton(onClick = onPasswordToggle) {
                         Icon(
-                            imageVector = if (isPasswordVisible) ImageVector.vectorResource(R.drawable.ic_eye_open) else ImageVector.vectorResource(R.drawable.ic_eye_close),
+                            imageVector = if (isPasswordVisible)
+                                ImageVector.vectorResource(R.drawable.ic_eye_open)
+                            else
+                                ImageVector.vectorResource(R.drawable.ic_eye_close),
                             contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -115,6 +124,10 @@ fun AuthTextField(
                 keyboardType = keyboardType,
                 imeAction = imeAction
             ),
+            keyboardActions = KeyboardActions(
+                onNext = { onImeAction() },
+                onDone = { onImeAction() }
+            ),
             singleLine = true,
             maxLines = 1,
             isError = error != null,
@@ -126,19 +139,29 @@ fun AuthTextField(
                 focusedLabelColor = MaterialTheme.colorScheme.primary,
                 unfocusedLabelColor = textFieldColor
             ),
+            // Use the Material3 slot so spacing and a11y are handled by the component
+            supportingText = supportOrError?.let { msg ->
+                {
+                    Text(
+                        text = msg,
+                        color = if (error != null)
+                            Color(0xFFFF2C2C)
+                        else
+                            Color(0xFFFF2C2C),
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.manrope_semibold)),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp,
+                            color =Color(0xFFFF2C2C)
+                        )
+                    )
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
-
-        if (error != null) {
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-            )
-        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -165,6 +188,7 @@ fun AuthTextFieldPasswordPreview() {
                 label = "Enter Your Password",
                 leadingIcon = Icons.Default.Lock,
                 isPassword = true,
+                supportingText = "Weak Password",
                 isPasswordVisible = false,
                 onPasswordToggle = {}
             )
