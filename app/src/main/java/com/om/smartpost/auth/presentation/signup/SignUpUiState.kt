@@ -38,3 +38,14 @@ enum class PasswordStrength(val progress: Float, val color: Color, val label: St
     GOOD(0.75f, Color(0xFFFFC107), "Good"),
     STRONG(1f, Color(0xFF4CAF50), "Strong")
 }
+
+enum class UserRole { POSTMAN, RECEIVER, ADMIN }
+
+fun normalizeRole(input: String?): String? {
+    return input?.trim()?.uppercase()?.let { up ->
+        when (up) {
+            "POSTMAN", "RECEIVER", "ADMIN" -> up
+            else -> null
+        }
+    }
+}

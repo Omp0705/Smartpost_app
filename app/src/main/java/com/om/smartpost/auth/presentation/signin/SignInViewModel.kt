@@ -3,7 +3,10 @@ package com.om.smartpost.auth.presentation.signin
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.om.smartpost.auth.domain.AuthRepository
+import com.om.smartpost.auth.domain.LoginUser
 import com.om.smartpost.auth.domain.ValidationError
+import com.om.smartpost.core.domain.utils.Result
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +14,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SignInViewModel: ViewModel() {
+class SignInViewModel (
+    private val authRepository: AuthRepository
+): ViewModel() {
 
     private val _state = MutableStateFlow(SignInUiState())
     val state = _state.asStateFlow()
@@ -52,45 +57,43 @@ class SignInViewModel: ViewModel() {
         }
     }
 
-    fun signIn(){
+    private fun signIn() {
         val currentState = state.value
+        val identifier = currentState.identifier.trim()
+        val password = currentState.password
 
         viewModelScope.launch {
-            val identifier = currentState.identifier.trim()
-            val password = currentState.password
-            when{
-                identifier.isEmpty() -> {
-                    _events.send(SignInEvent.ValidationErrors(ValidationError.IDENTIFIER_EMPTY))
-                }
-
-                identifier.contains("@") -> {
-                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches()) {
-                        _events.send(SignInEvent.ValidationErrors(ValidationError.EMAIL_INVALID))
-                    } else if (password.isEmpty()) {
-                        _events.send(SignInEvent.ValidationErrors(ValidationError.PASSWORD_EMPTY))
-                    } else if (password.length < 6) {
-                        _events.send(SignInEvent.ValidationErrors(ValidationError.PASSWORD_TO_SHORT))
-                    } else {
-                        _events.send(SignInEvent.ShowMessage("Signing in..."))
-                        _state.update { it.copy(isLoading = true) }
-                    }
-                }
-
-                else -> {
-                    val usernameRegex = "^[a-zA-Z0-9._-]{3,15}$".toRegex()
-                    if (!usernameRegex.matches(identifier)) {
-                        _events.send(SignInEvent.ValidationErrors(ValidationError.USERNAME_INVALID))
-                    } else if (password.isEmpty()) {
-                        _events.send(SignInEvent.ValidationErrors(ValidationError.PASSWORD_EMPTY))
-                    } else if (password.length < 6) {
-                        _events.send(SignInEvent.ValidationErrors(ValidationError.PASSWORD_TO_SHORT))
-                    } else {
-                        _events.send(SignInEvent.ShowMessage("Signing in..."))
-                        _state.update { it.copy(isLoading = true) }
-                    }
-                }
-
+            val validationError = validateInput(identifier, password)
+            if (validationError != null) {
+                _events.send(SignInEvent.ValidationErrors(validationError))
+                return@launch
             }
+
+            _state.update { it.copy(isLoading = true) }
+            val result =  authRepository.loginUser(LoginUser(identifier,password))
+            when (result) {
+                is Result.Success -> {
+                    _events.send(SignInEvent.ShowMessage("Login Successful"))
+                    _events.send(SignInEvent.NavigateToHome)
+                }
+                is Result.Error -> {
+                    _events.send(SignInEvent.ShowMessage(result.error.message))
+                }
+            }
+
+            _state.update { it.copy(isLoading = false) }
+        }
+    }
+    private fun validateInput(identifier: String, password: String): ValidationError? {
+        return when {
+            identifier.isEmpty() -> ValidationError.IDENTIFIER_EMPTY
+            identifier.contains("@") && !android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches() ->
+                ValidationError.EMAIL_INVALID
+            !identifier.contains("@") && !Regex("^[a-zA-Z0-9._-]{3,15}$").matches(identifier) ->
+                ValidationError.USERNAME_INVALID
+            password.isEmpty() -> ValidationError.PASSWORD_EMPTY
+            password.length < 6 -> ValidationError.PASSWORD_TO_SHORT
+            else -> null
         }
     }
 

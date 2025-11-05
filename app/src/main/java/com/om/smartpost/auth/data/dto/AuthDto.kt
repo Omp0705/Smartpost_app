@@ -14,6 +14,17 @@ data class SignUpRequestDto(
 
 @Serializable
 data class SignupResponseDto(
+    val msg: String
+)
+
+@Serializable
+data class LoginRequestDto (
+    val identifier: String,
+    val password: String
+)
+
+@Serializable
+data class LoginResponseDto (
     val token: String,
     val refreshToken: String,
     val username: String,
@@ -21,11 +32,19 @@ data class SignupResponseDto(
 )
 
 @Serializable
+data class ValidSessionDto (
+    val msg: String
+)
+
+
+
+@Serializable
 data class ErrorResponseDto(
     val timestamp: String,
     val status: Int,
     val error: String,
-    val message: String
+    val message: String,
+    val code: String? = null // prefer server to send this
 )
 
 

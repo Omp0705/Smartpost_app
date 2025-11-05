@@ -66,7 +66,7 @@ fun SignUpStep2(
     AuthLabel(text = "Role", modifier = Modifier)
     Spacer(Modifier.height(4.dp))
     Column {
-        listOf("Receiver","Postman","Admin").forEach{ role ->
+        listOf("RECEIVER","POSTMAN","ADMIN").forEach{ role ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

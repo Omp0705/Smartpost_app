@@ -22,17 +22,17 @@ android {
     }
 
     buildTypes {
-        val ipAddress = "192.168.37.27"
+        val ipAddress = "10.41.116.27"
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String","BASE_URL","\"http://{$ipAddress}:8080\"")
+            buildConfigField("String","BASE_URL","\"http://$ipAddress:8080/\"")
         }
         debug {
-            buildConfigField("String","BASE_URL","\"http://{$ipAddress}:8080\"")
+            buildConfigField("String","BASE_URL","\"http://$ipAddress:8080/\"")
         }
     }
     compileOptions {
@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.play.services.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,22 +67,26 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.security.crypto)
 
 
     implementation(libs.androidx.navigation.compose)
     // Koin BOM (optional but recommended) so you don’t have to add version numbers everywhere
-    implementation(platform("io.insert-koin:koin-bom:4.1.1"))  // latest stable as of now :contentReference[oaicite:1]{index=1}
-    implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-android")
-    implementation("io.insert-koin:koin-androidx-compose")
-    implementation("io.insert-koin:koin-compose-viewmodel")
-    implementation("io.ktor:ktor-client-core:2.3.12")
-    implementation("io.ktor:ktor-client-cio:2.3.12")
-    implementation("io.ktor:ktor-client-logging:2.3.12")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation(platform(libs.koin.bom))  // latest stable as of now :contentReference[oaicite:1]{index=1}
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.compose.viewmodel)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.ktor.client.auth)
+
 
 
 

@@ -9,15 +9,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.om.smartpost.auth.presentation.forgotpass.ForgotPasswordScreen
 import com.om.smartpost.auth.presentation.forgotpass.ForgotPasswordViewModel
-import com.om.smartpost.auth.presentation.forgotpass.ForgotUiState
 import com.om.smartpost.auth.presentation.signin.SignInScreen
-import com.om.smartpost.auth.presentation.signin.SignInUiState
 import com.om.smartpost.auth.presentation.signin.SignInViewModel
 import com.om.smartpost.auth.presentation.signup.SignUpScreen
-import com.om.smartpost.auth.presentation.signup.SignUpUiState
 import com.om.smartpost.auth.presentation.signup.SignUpViewModel
-import kotlinx.coroutines.flow.emptyFlow
-import org.koin.androidx.compose.koinViewModel
+import com.om.smartpost.dashboard.presentation.UserInfoScreen
+import com.om.smartpost.dashboard.presentation.UserInfoViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
@@ -46,6 +44,11 @@ fun AppNavGraph(
                     },
                     onNavigateToForgotPass = {
                         navController.navigate(NavRoutes.FORGOT_PASSWORD)
+                    },
+                    onNavigateToHome = {
+                        navController.navigate(NavRoutes.MAIN){
+                            popUpTo(NavRoutes.AUTH) {inclusive = true}
+                        }
                     }
                 )
 
@@ -75,10 +78,23 @@ fun AppNavGraph(
             }
 
         }
+        navigation(
+            startDestination = NavRoutes.HOME,
+            route = NavRoutes.MAIN
+        ){
 
-        composable(NavRoutes.HOME_SCREEN) {
+            composable(NavRoutes.HOME) {
+                val viewModel: UserInfoViewModel = koinViewModel()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                UserInfoScreen(
+                    state = state,
+                    onAction = viewModel::onAction
+                )
+            }
 
         }
+
+
     }
 
 }

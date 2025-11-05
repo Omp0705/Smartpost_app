@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">SmartPost</string>
+    <string name="error_username_exists">Username already exists\n</string>
+    <string name="error_email_exists">Email already exists\n</string>
+    <string name="error_mobile_exists">Mobile already exists</string>
+    <string name="error_weak_password">Entered password is too weak</string>
+    <string name="error_invalid_email">Invalid Email Format</string>
+    <string name="error_invalid_mobile">Invalid Mobile No.</string>
+    <string name="error_no_internet">No Internet, Pls retry</string>
+    <string name="error_request_timeout">Request Timeout</string>
+    <string name="error_too_many_requests">Too Many requests</string>
+    <string name="error_unauthorized">Unauthorized</string>
+    <string name="error_bad_request">Bad Request\n</string>
+    <string name="error_server">Server Error occured\n</string>
+    <string name="error_unknown">Unknown Error\n</string>
+    <string name="error_serialization">Serialization Error</string>
 </resources>

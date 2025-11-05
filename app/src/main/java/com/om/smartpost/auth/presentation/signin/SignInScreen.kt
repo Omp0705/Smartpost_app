@@ -66,6 +66,7 @@ fun SignInScreen(
     onAction: (SignInAction) -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPass: () -> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 
 ) {
@@ -111,6 +112,9 @@ fun SignInScreen(
                 }
                 is SignInEvent.ShowMessage -> {
                     snackbarHostState.showSnackbar(event.message)
+                }
+                is SignInEvent.NavigateToHome -> {
+                    onNavigateToHome()
                 }
             }
         }
@@ -299,7 +303,8 @@ private fun SignInScreenPreview() {
             events = emptyFlow(),
             onAction = {},
             onNavigateToSignUp = {},
-            onNavigateToForgotPass = {}
+            onNavigateToForgotPass = {},
+            onNavigateToHome = {}
         )
     }
 

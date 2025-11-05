@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -48,12 +49,15 @@ fun SignUpScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
 
         events.collect { event ->
             when (event) {
-                is SignUpEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
-                is SignUpEvent.ValidationFailed -> {}
+                is SignUpEvent.Success -> snackbarHostState.showSnackbar(event.message)
+                is SignUpEvent.Error -> {
+                    snackbarHostState.showSnackbar(event.error.message)
+                }
                 else -> {}
             }
         }

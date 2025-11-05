@@ -1,9 +1,11 @@
 package com.om.smartpost.auth.presentation.signup
 
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.om.smartpost.auth.domain.ValidationError
+import com.om.smartpost.auth.domain.AuthRepository
+import com.om.smartpost.auth.domain.RegisterUser
+import com.om.smartpost.core.domain.utils.onError
+import com.om.smartpost.core.domain.utils.onSuccess
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -13,7 +15,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel (
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(SignUpUiState())
     val state = _state.asStateFlow()
@@ -161,10 +165,33 @@ class SignUpViewModel : ViewModel() {
             )
         }
         if (!anyErr) {
-            setState { copy(isLoading = true) }
+
             // proceed to repository (Network Call)
+            register(state)
         }
 
+    }
+    private fun register(state: SignUpUiState) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            authRepository.registerUser(
+                    RegisterUser(
+                        fullName = state.fullName,
+                        username = state.username,
+                        email = state.email,
+                        mobileNo = state.mobileNo,
+                        password = state.password,
+                        role = state.selectedRole!!
+                    )
+                ).onSuccess {
+                _events.send(SignUpEvent.Success("Registration Successful"))
+                setState { copy(isLoading = false) }
+            }
+                .onError { err->
+                    _events.send(SignUpEvent.Error(err))
+                    setState { copy(isLoading = false) }
+                }
+        }
     }
 
     private fun validateEmail(input: String): String? {

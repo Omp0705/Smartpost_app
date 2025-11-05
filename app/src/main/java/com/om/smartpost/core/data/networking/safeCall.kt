@@ -1,5 +1,6 @@
 package com.om.smartpost.core.data.networking
 
+import com.om.smartpost.core.domain.utils.ApiError
 import com.om.smartpost.core.domain.utils.NetworkError
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.statement.HttpResponse
@@ -11,19 +12,19 @@ import com.om.smartpost.core.domain.utils.Result
 
 suspend inline fun <reified T> safeCall(
     execute: () -> HttpResponse
-): Result<T, NetworkError>{
+): Result<T, ApiError>{
     val response = try{
         execute()
     }
     catch (e: UnresolvedAddressException){
-        return Result.Error(NetworkError.NO_INTERNET)
+        return Result.Error(ApiError.Transport(NetworkError.NO_INTERNET))
     }
     catch (e: NoTransformationFoundException){
-        return Result.Error(NetworkError.SERIALIZATION_ERROR)
+        return Result.Error(ApiError.Transport(NetworkError.SERIALIZATION_ERROR))
     }
     catch (e: Exception){
         coroutineContext.ensureActive()
-        return Result.Error(NetworkError.UNKNOWN)
+        return Result.Error(ApiError.Transport(NetworkError.UNKNOWN))
     }
     return responseToResult(response)
 }
