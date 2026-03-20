@@ -3,6 +3,7 @@ package com.om.smartpost
 import android.app.Application
 import androidx.compose.runtime.saveable.listSaver
 import com.om.smartpost.di.appModule
+import com.om.smartpost.customer.profile.di.profileModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -17,7 +18,8 @@ class SmartPostApp: Application() {
 
             modules(
                 listOf(
-                    appModule
+                    appModule,
+                    profileModule
                 )
             )
         }

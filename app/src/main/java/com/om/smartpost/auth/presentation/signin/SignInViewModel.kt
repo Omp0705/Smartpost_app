@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import com.google.firebase.messaging.FirebaseMessaging
+import com.om.smartpost.auth.presentation.mappers.toUiText
+import com.om.smartpost.core.presentation.UiText
 
 class SignInViewModel (
     private val authRepository: AuthRepository
@@ -73,11 +77,17 @@ class SignInViewModel (
             val result =  authRepository.loginUser(LoginUser(identifier,password))
             when (result) {
                 is Result.Success -> {
-                    _events.send(SignInEvent.ShowMessage("Login Successful"))
-                    _events.send(SignInEvent.NavigateToHome)
+                    _events.send(SignInEvent.ShowMessage(UiText.DynamicString("Login Successful")))
+                    syncFcmToken()
+                    val role = result.data.role
+                    if (role == "POSTMAN") {
+                         _events.send(SignInEvent.NavigateToPostmanHome)
+                    } else {
+                         _events.send(SignInEvent.NavigateToCustomerHome)
+                    }
                 }
                 is Result.Error -> {
-                    _events.send(SignInEvent.ShowMessage(result.error.message))
+                    _events.send(SignInEvent.ShowMessage(result.error.toUiText()))
                 }
             }
 
@@ -86,16 +96,26 @@ class SignInViewModel (
     }
     private fun validateInput(identifier: String, password: String): ValidationError? {
         return when {
-            identifier.isEmpty() -> ValidationError.IDENTIFIER_EMPTY
+            identifier.isEmpty() -> ValidationError.IdentifierEmpty
             identifier.contains("@") && !android.util.Patterns.EMAIL_ADDRESS.matcher(identifier).matches() ->
-                ValidationError.EMAIL_INVALID
+                ValidationError.EmailInvalid
             !identifier.contains("@") && !Regex("^[a-zA-Z0-9._-]{3,15}$").matches(identifier) ->
-                ValidationError.USERNAME_INVALID
-            password.isEmpty() -> ValidationError.PASSWORD_EMPTY
-            password.length < 6 -> ValidationError.PASSWORD_TO_SHORT
+                ValidationError.UsernameInvalid
+            password.isEmpty() -> ValidationError.PasswordEmpty
+            password.length < 6 -> ValidationError.PasswordTooShort
             else -> null
         }
     }
 
+    private fun syncFcmToken() {
+        viewModelScope.launch {
+            try {
+                val token = FirebaseMessaging.getInstance().token.await()
+                authRepository.updateFcmToken(token)
+            } catch (e: Exception) {
+                // Ignore gracefully 
+            }
+        }
+    }
 
 }

@@ -65,12 +65,19 @@ object HttpClientFactory {
                         val response = client.post(constructUrl("/api/auth/refresh")) {
                                 setBody(mapOf("refreshToken" to refreshToken))
                         }
-                        val newToken = response.body<LoginResponseDto>().token
-                        val newRefToken = response.body<LoginResponseDto>().refreshToken
-                        println("new token : $newToken")
-                        tokenManager.saveTokens(newToken, newRefToken)
-                        BearerTokens(newToken, newRefToken)
+
+                        if (response.status.value in 200..299) {
+                            val newToken = response.body<LoginResponseDto>().token
+                            val newRefToken = response.body<LoginResponseDto>().refreshToken
+                            println("new token : $newToken")
+                            tokenManager.saveTokens(newToken, newRefToken)
+                            BearerTokens(newToken, newRefToken)
+                        } else {
+                            println("Refresh failed with status: ${response.status}")
+                            tokenManager.clearTokens()
+                            null
                         }
+                    }
                     }
                 }
 

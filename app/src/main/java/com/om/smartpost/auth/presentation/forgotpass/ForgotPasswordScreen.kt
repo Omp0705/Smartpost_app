@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +35,8 @@ import com.example.compose.SmartPostTheme
 import com.om.smartpost.R
 import com.om.smartpost.auth.presentation.components.AuthButton
 import com.om.smartpost.auth.presentation.components.AuthTextField
-import com.om.smartpost.auth.presentation.signin.SignInAction
+import com.om.smartpost.auth.presentation.mappers.toUiText
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -49,28 +48,34 @@ fun ForgotPasswordScreen(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier) {
 
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        events.collect{ event ->
-            when(event){
+        events.collect { event ->
+            when (event) {
                 is ForgotEvent.ValidationErrors -> {
-                    snackbarHostState.showSnackbar(event.error.message)
+                    snackbarHostState.showSnackbar(event.error.toUiText().asString(context))
                 }
+
                 is ForgotEvent.ShowMessage -> {
-                    snackbarHostState.showSnackbar(event.msg)
+                    snackbarHostState.showSnackbar(event.msg.asString(context))
+                }
+
+                ForgotEvent.NavigateToSignIn -> {
+
                 }
             }
 
         }
     }
-    Scaffold( snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-        ){
+        ) {
             Spacer(Modifier.height(16.dp))
             Surface(
                 shape = CircleShape,
@@ -78,68 +83,45 @@ fun ForgotPasswordScreen(
                 tonalElevation = 0.dp,
                 modifier = Modifier.size(36.dp)
             ) {
+                // Determine the correct back action based on the step
+                val currentBackAction = when (state.currentStep) {
+                    ForgotStep.EMAIL_ENTRY -> onBackPressed // Exit Forgot Password flow
+                    else -> {
+                        // Go back one step within the flow
+                        { onAction(ForgotAction.GoBackToEmailEntry) }
+                    }
+                }
                 IconButton(onClick = { onBackPressed() }) {
                     Icon(
                         painter = painterResource(R.drawable.ic_back),
                         contentDescription = "Back",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp).align(Alignment.CenterHorizontally)
+                        modifier = Modifier
+                            .size(16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+
+            }
+            when (state.currentStep) {
+                ForgotStep.EMAIL_ENTRY -> EmailEntryStep(state, onAction)
+                ForgotStep.OTP_VALIDATION -> {
+                    OtpValidationStep(
+                        state = state,
+                        onAction = onAction,
+                    )
+                }
+                ForgotStep.PASSWORD_RESET -> {
+                    PasswordResetStep(
+                        state = state,
+                        onAction = onAction
                     )
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Forgot Password",
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Please enter your email to reset the password",
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    fontSize = 14.sp,
-                    color = Color(0xFF757575)
-                )
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(
-                modifier = Modifier.align(Alignment.Start),
-                text = "Your Email",
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
-                )
-            )
-            AuthTextField(
-                value = state.email,
-                onValueChange = { onAction(ForgotAction.updateEmail(it))},
-                label = "Enter your Email",
-                isPassword = false,
-                keyboardType = KeyboardType.Email ,
-                onImeAction = {  } ,
-                enabled = !state.isLoading,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            AuthButton(
-                text = "Reset Password",
-                onClick = { onAction(ForgotAction.ResetPassword) },
-                enabled = if (!state.email.isEmpty()) true else false,
-                isLoading = state.isLoading
-            )
 
         }
-
     }
-
 }
 
 @Preview
@@ -147,12 +129,38 @@ fun ForgotPasswordScreen(
 private fun ForgotPasswordScreenPreview() {
     SmartPostTheme {
         ForgotPasswordScreen(
-            state = ForgotUiState(),
+            state = ForgotUiState(currentStep = ForgotStep.EMAIL_ENTRY),
             events = emptyFlow(),
             onAction = {},
             onBackPressed = {}
         )
 
     }
+}
 
+@Preview
+@Composable
+private fun ForgotPasswordStep2Preview() {
+    SmartPostTheme {
+        ForgotPasswordScreen(
+            state = ForgotUiState(currentStep = ForgotStep.OTP_VALIDATION),
+            events = emptyFlow(),
+            onAction = {},
+            onBackPressed = {}
+        )
+
+    }
+}
+@Preview
+@Composable
+private fun ForgotPasswordStep3Preview() {
+    SmartPostTheme {
+        ForgotPasswordScreen(
+            state = ForgotUiState(currentStep = ForgotStep.PASSWORD_RESET),
+            events = emptyFlow(),
+            onAction = {},
+            onBackPressed = {}
+        )
+
+    }
 }

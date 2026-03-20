@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.om.smartpost.core.presentation.UiText
+import com.om.smartpost.auth.presentation.mappers.toUiText
 
 class SignUpViewModel (
     private val authRepository: AuthRepository
@@ -184,11 +186,11 @@ class SignUpViewModel (
                         role = state.selectedRole!!
                     )
                 ).onSuccess {
-                _events.send(SignUpEvent.Success("Registration Successful"))
+                _events.send(SignUpEvent.Success(UiText.DynamicString("Registration Successful")))
                 setState { copy(isLoading = false) }
             }
                 .onError { err->
-                    _events.send(SignUpEvent.Error(err))
+                    _events.send(SignUpEvent.Error(err.toUiText()))
                     setState { copy(isLoading = false) }
                 }
         }

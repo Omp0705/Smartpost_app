@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.om.smartpost.auth.presentation.components.AuthTextField
-import com.om.smartpost.core.presentation.utils.AuthLabel
+import com.om.smartpost.auth.presentation.components.AuthLabel
 
 @Composable
 fun SignUpStep2(
@@ -62,27 +62,7 @@ fun SignUpStep2(
             .padding(top = 8.dp)
     )
 
-    Spacer(Modifier.height(12.dp))
-    AuthLabel(text = "Role", modifier = Modifier)
-    Spacer(Modifier.height(4.dp))
-    Column {
-        listOf("RECEIVER","POSTMAN","ADMIN").forEach{ role ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(enabled = !state.isLoading) { onAction(SignUpAction.SelectRole(role)) }
-                    .padding(vertical = 6.dp)
-            ){
-                RadioButton(
-                    selected = state.selectedRole == role,
-                    onClick = { onAction(SignUpAction.SelectRole(role)) },
-                    enabled = !state.isLoading
-                )
-                Text(text = role, modifier = Modifier.padding(start = 8.dp))
-            }
-        }
-    }
+    // Role selection removed per user request (Defaulted to CUSTOMER)
 
 }
 

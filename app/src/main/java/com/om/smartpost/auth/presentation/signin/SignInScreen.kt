@@ -30,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -52,9 +53,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.SmartPostTheme
 import com.om.smartpost.R
-import com.om.smartpost.auth.presentation.components.AgreementRow
 import com.om.smartpost.auth.presentation.components.AuthButton
 import com.om.smartpost.auth.presentation.components.AuthTextField
+import com.om.smartpost.auth.presentation.mappers.toUiText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -66,10 +67,12 @@ fun SignInScreen(
     onAction: (SignInAction) -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPass: () -> Unit,
-    onNavigateToHome: () -> Unit,
+    onNavigateToCustomerHome: () -> Unit,
+    onNavigateToPostmanHome: () -> Unit,
     modifier: Modifier = Modifier
 
 ) {
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -108,13 +111,16 @@ fun SignInScreen(
             println("Event received: $event")
             when (event) {
                 is SignInEvent.ValidationErrors -> {
-                    snackbarHostState.showSnackbar(event.error.message)
+                    snackbarHostState.showSnackbar(event.error.toUiText().asString(context))
                 }
                 is SignInEvent.ShowMessage -> {
-                    snackbarHostState.showSnackbar(event.message)
+                    snackbarHostState.showSnackbar(event.message.asString(context))
                 }
-                is SignInEvent.NavigateToHome -> {
-                    onNavigateToHome()
+                is SignInEvent.NavigateToCustomerHome -> {
+                    onNavigateToCustomerHome()
+                }
+                is SignInEvent.NavigateToPostmanHome -> {
+                    onNavigateToPostmanHome()
                 }
             }
         }
@@ -304,7 +310,8 @@ private fun SignInScreenPreview() {
             onAction = {},
             onNavigateToSignUp = {},
             onNavigateToForgotPass = {},
-            onNavigateToHome = {}
+            onNavigateToCustomerHome = {},
+            onNavigateToPostmanHome = {}
         )
     }
 

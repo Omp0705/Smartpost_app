@@ -19,10 +19,10 @@ import com.example.compose.SmartPostTheme
 import com.om.smartpost.auth.presentation.signin.SignInScreen
 import com.om.smartpost.auth.presentation.signin.SignInUiState
 import com.om.smartpost.auth.presentation.signin.dummyState
-import com.om.smartpost.core.presentation.AuthState
-import com.om.smartpost.core.presentation.SplashViewModel
-import com.om.smartpost.ui.navigation.AppNavGraph
-import com.om.smartpost.ui.navigation.NavRoutes
+import com.om.smartpost.auth.presentation.AuthState
+import com.om.smartpost.auth.presentation.splash.SplashViewModel
+import com.om.smartpost.navigation.AppNavGraph
+import com.om.smartpost.navigation.NavRoutes
 import org.koin.android.ext.android.inject
 
 
@@ -41,7 +41,10 @@ class MainActivity : ComponentActivity() {
             SmartPostTheme {
                 val navController = rememberNavController()
                 val startDestination = when (authState) {
-                    AuthState.Authenticated -> NavRoutes.MAIN // Go straight to Home
+                    is AuthState.Authenticated -> {
+                        val role = (authState as AuthState.Authenticated).role
+                        if (role == "POSTMAN") NavRoutes.POSTMAN_HOME else NavRoutes.CUSTOMER_HOME
+                    }
                     AuthState.Unauthenticated -> NavRoutes.AUTH // Go to Login Flow
                     AuthState.Loading -> NavRoutes.AUTH // Default/Fallback if splash failed to hold
                 }

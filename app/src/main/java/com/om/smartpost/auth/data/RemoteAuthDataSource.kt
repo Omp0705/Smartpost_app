@@ -2,9 +2,13 @@ package com.om.smartpost.auth.data
 
 import com.om.smartpost.auth.data.dto.LoginRequestDto
 import com.om.smartpost.auth.data.dto.LoginResponseDto
+import com.om.smartpost.auth.data.dto.PasswordResetRequest
+import com.om.smartpost.auth.data.dto.ResetPasswordResponse
 import com.om.smartpost.auth.data.dto.SignUpRequestDto
 import com.om.smartpost.auth.data.dto.SignupResponseDto
 import com.om.smartpost.auth.data.dto.ValidSessionDto
+import com.om.smartpost.auth.data.dto.ValidateOtpRequest
+import com.om.smartpost.auth.data.dto.FcmTokenRequest
 import com.om.smartpost.auth.data.mappers.toDto
 import com.om.smartpost.auth.domain.AuthResult
 import com.om.smartpost.auth.domain.LoginUser
@@ -17,6 +21,7 @@ import com.om.smartpost.core.domain.utils.Result
 import com.om.smartpost.core.domain.utils.map
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
@@ -61,4 +66,46 @@ class RemoteAuthDataSource(
             )
         }
     }
+
+    suspend fun forgotPassword(email: String): Result<ResetPasswordResponse,ApiError> {
+        return safeCall<ResetPasswordResponse> {
+            client.post(
+                urlString = constructUrl("/api/auth/forgot-password")
+            ){
+                setBody(mapOf("email" to email))
+            }
+        }
+    }
+
+    suspend fun validateOtp(request: ValidateOtpRequest): Result<ResetPasswordResponse,ApiError> {
+        return safeCall<ResetPasswordResponse> {
+            client.post(
+                urlString = constructUrl("/api/auth/verify-otp")
+            ){
+                setBody(request)
+            }
+        }
+    }
+
+    suspend fun resetPassword(request: PasswordResetRequest): Result<ResetPasswordResponse,ApiError> {
+        return safeCall<ResetPasswordResponse> {
+            client.post(
+                urlString = constructUrl("/api/auth/reset-password")
+            ){
+                setBody(request)
+            }
+        }
+    }
+
+    suspend fun updateFcmToken(token: String): Result<Unit, ApiError> {
+        return safeCall<Unit> {
+            client.patch(
+                urlString = constructUrl("/api/users/me/fcm-token")
+            ) {
+                setBody(FcmTokenRequest(token))
+            }
+        }
+    }
+
+
 }

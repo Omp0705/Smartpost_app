@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.om.smartpost" />
+                  <option name="mobileSdkAppId" value="1:475845883014:android:660853fb53a4ac71ad8d07" />
+                  <option name="projectId" value="smartpost-7ecfc" />
+                  <option name="projectNumber" value="475845883014" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -3,10 +3,12 @@ package com.om.smartpost.auth.data.mappers
 
 import com.om.smartpost.auth.data.dto.LoginRequestDto
 import com.om.smartpost.auth.data.dto.LoginResponseDto
+import com.om.smartpost.auth.data.dto.ResetPasswordResponse
 import com.om.smartpost.auth.data.dto.SignUpRequestDto
 import com.om.smartpost.auth.domain.AuthResult
 import com.om.smartpost.auth.domain.LoginUser
 import com.om.smartpost.auth.domain.RegisterUser
+import com.om.smartpost.auth.domain.ResetPasswordResult
 
 
 fun RegisterUser.toDto(): SignUpRequestDto {
@@ -33,5 +35,19 @@ fun LoginResponseDto.toDomain(): AuthResult {
         refreshToken = refreshToken,
         username = username,
         role = role
+    )
+}
+
+fun ResetPasswordResponse.toDomain(): ResetPasswordResult {
+    return ResetPasswordResult(
+        message = message,
+        code = status
+    )
+}
+
+fun ResetPasswordResult.toDto():   ResetPasswordResponse {
+    return ResetPasswordResponse(
+        message = message,
+        status = code
     )
 }

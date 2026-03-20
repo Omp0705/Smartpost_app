@@ -11,7 +11,7 @@ import com.om.smartpost.core.domain.utils.Result
 
 
 suspend inline fun <reified T> safeCall(
-    execute: () -> HttpResponse
+    execute: suspend () -> HttpResponse
 ): Result<T, ApiError>{
     val response = try{
         execute()

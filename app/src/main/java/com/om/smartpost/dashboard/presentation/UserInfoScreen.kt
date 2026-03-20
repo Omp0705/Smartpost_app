@@ -7,18 +7,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun UserInfoScreen(
     state: InfoUiState,
+    events: Flow<InfoEvent>,
     onAction: (InfoAction) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
+    LaunchedEffect(key1 = Unit) {
+        events.collect { event ->
+            when(event) {
+                InfoEvent.NavigateToAuth -> {
+                    onNavigateToLogin()
+                }
+                is InfoEvent.ShowMessage -> { /* Handle Snackbar message */ }
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,6 +58,16 @@ fun UserInfoScreen(
         ) {
             Text(text = "Authorized access")
         }
+        OutlinedButton(
+            onClick = { onAction(InfoAction.OnLogout) },
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .padding(top = 16.dp),
+            enabled = true
+        ) {
+            Text(text = "Logout")
+        }
+
     }
 }
 
@@ -50,7 +76,9 @@ fun UserInfoScreen(
 private fun UserInfoPreview() {
     UserInfoScreen(
         state = InfoUiState(),
-        onAction = {}
+        onAction = {},
+        events = emptyFlow(),
+        onNavigateToLogin = {}
 
     )
 }

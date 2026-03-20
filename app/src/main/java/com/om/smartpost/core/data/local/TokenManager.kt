@@ -17,6 +17,7 @@ class TokenManager (private val context: Context) {
         private const val PREF_NAME = "auth_prefs"
         private const val ACCESS_TOKEN_KEY = "access_token"
         private const val REFRESH_TOKEN_KEY = "refresh_token"
+        private const val USER_ROLE_KEY = "user_role"
     }
 
     private val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
@@ -28,18 +29,21 @@ class TokenManager (private val context: Context) {
     )
 
     fun saveTokens(accessToken: String, refreshToken: String) {
-        println("Saving ...")
-        println(accessToken)
-        println(refreshToken)
+        println("Saving tokens...")
         sharedPreferences.edit().apply {
             putString(ACCESS_TOKEN_KEY, accessToken)
             putString(REFRESH_TOKEN_KEY, refreshToken)
-            apply() // Non-blocking
+            apply()
         }
+    }
+
+    fun saveRole(role: String) {
+        sharedPreferences.edit().putString(USER_ROLE_KEY, role).apply()
     }
 
     fun getAccessToken(): String?  = sharedPreferences.getString(ACCESS_TOKEN_KEY, null)
     fun getRefreshToken(): String? = sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
+    fun getUserRole(): String? = sharedPreferences.getString(USER_ROLE_KEY, null)
 
     fun clearTokens() {
         sharedPreferences.edit(commit = true){

@@ -14,7 +14,7 @@ data class SignUpUiState(
 
     val fullName: String = "",
     val username: String = "",
-    val selectedRole: String? = null,
+    val selectedRole: String? = "CUSTOMER",
 
     val isLoading: Boolean = false,
 

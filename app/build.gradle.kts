@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-
+    id("com.google.gms.google-services")
 
 }
 
@@ -29,10 +29,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String","BASE_URL","\"http://$ipAddress:8080/\"")
+//            buildConfigField("String","BASE_URL","\"http://$ipAddress:8080/\"")
+            buildConfigField("String","BASE_URL","\"https://api.smartpost.fun/\"")
         }
         debug {
-            buildConfigField("String","BASE_URL","\"http://$ipAddress:8080/\"")
+//            buildConfigField("String","BASE_URL","\"http://$ipAddress:8080/\"")
+            buildConfigField("String","BASE_URL","\"https://api.smartpost.fun/\"")
         }
     }
     compileOptions {
@@ -60,6 +62,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.play.services.auth)
+    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.kotlinx.coroutines.play.services)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,6 +90,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.ktor.client.auth)
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // 3. Play Services Coroutine support (Fixes the .await() error)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
 
 
 

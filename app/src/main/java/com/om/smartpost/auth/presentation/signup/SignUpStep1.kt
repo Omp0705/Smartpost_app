@@ -25,7 +25,7 @@ import com.om.smartpost.R
 import com.om.smartpost.auth.presentation.components.AgreementRow
 import com.om.smartpost.auth.presentation.components.AuthTextField
 import com.om.smartpost.auth.presentation.components.PasswordStrengthIndicator
-import com.om.smartpost.core.presentation.utils.AuthLabel
+import com.om.smartpost.auth.presentation.components.AuthLabel
 
 @Composable
 fun SignUpStep1(

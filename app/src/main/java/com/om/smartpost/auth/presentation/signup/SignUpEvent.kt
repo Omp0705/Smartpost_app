@@ -1,10 +1,9 @@
 package com.om.smartpost.auth.presentation.signup
 
-import com.om.smartpost.auth.presentation.signin.SignInEvent
-import com.om.smartpost.core.domain.utils.AuthError
+import com.om.smartpost.core.presentation.UiText
 
 sealed interface SignUpEvent {
-    data class Success(val message: String): SignUpEvent
-    data class Error(val error: AuthError): SignUpEvent
+    data class Success(val message: UiText): SignUpEvent
+    data class Error(val error: UiText): SignUpEvent
     object NavigateToHome: SignUpEvent
 }

@@ -54,9 +54,9 @@ fun SignUpScreen(
 
         events.collect { event ->
             when (event) {
-                is SignUpEvent.Success -> snackbarHostState.showSnackbar(event.message)
+                is SignUpEvent.Success -> snackbarHostState.showSnackbar(event.message.asString(context))
                 is SignUpEvent.Error -> {
-                    snackbarHostState.showSnackbar(event.error.message)
+                    snackbarHostState.showSnackbar(event.error.asString(context))
                 }
                 else -> {}
             }

@@ -2,6 +2,7 @@ package com.om.smartpost.dashboard.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.om.smartpost.auth.domain.AuthRepository
 import com.om.smartpost.core.domain.utils.Result
 import com.om.smartpost.dashboard.domain.InfoRepository
 import kotlinx.coroutines.channels.Channel
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 
 
 class UserInfoViewModel(
-    private val infoRepository: InfoRepository
+    private val infoRepository: InfoRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InfoUiState())
@@ -25,7 +27,13 @@ class UserInfoViewModel(
     fun onAction(action: InfoAction) {
         when (action) {
             InfoAction.onProtectedAccess -> getProtectedData()
+            InfoAction.OnLogout -> logout()
         }
+    }
+
+    private fun logout() = viewModelScope.launch {
+        authRepository.logout() // Clear tokens via repository
+        _events.send(InfoEvent.NavigateToAuth) // Signal UI to navigate
     }
 
     private fun getProtectedData() {
