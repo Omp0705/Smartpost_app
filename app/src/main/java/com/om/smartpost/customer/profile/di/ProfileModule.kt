@@ -16,7 +16,8 @@ val profileModule = module {
     }
     single<ProfileRepository> {
         ProfileRepositoryImpl(
-            remoteProfileDataSource = get()
+            remoteProfileDataSource = get(),
+            tokenManager = get()
         )
     }
 

@@ -3,7 +3,9 @@ package com.om.smartpost.customer.parcel.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.om.smartpost.core.domain.utils.Result
+import com.om.smartpost.customer.parcel.domain.model.ShipmentStatus
 import com.om.smartpost.customer.parcel.domain.repository.ShipmentRepository
+import com.om.smartpost.customer.parcel.presentation.components.ParcelFilter
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -79,20 +81,20 @@ class ParcelViewModel(
         var filtered = allParcels
 
         // Status Filtering
-        if (filterCondition != com.om.smartpost.customer.parcel.presentation.components.ParcelFilter.ALL) {
+        if (filterCondition != ParcelFilter.ALL) {
             filtered = filtered.filter { shipment ->
                 when (filterCondition) {
-                    com.om.smartpost.customer.parcel.presentation.components.ParcelFilter.DELIVERED -> {
-                        shipment.currentStatus == com.om.smartpost.customer.parcel.domain.model.ShipmentStatus.DELIVERED
+                    ParcelFilter.DELIVERED -> {
+                        shipment.currentStatus == ShipmentStatus.DELIVERED
                     }
-                    com.om.smartpost.customer.parcel.presentation.components.ParcelFilter.INCOMING -> {
+                    ParcelFilter.INCOMING -> {
                         shipment.currentStatus in listOf(
-                            com.om.smartpost.customer.parcel.domain.model.ShipmentStatus.IN_TRANSIT,
-                            com.om.smartpost.customer.parcel.domain.model.ShipmentStatus.OUT_FOR_DELIVERY,
-                            com.om.smartpost.customer.parcel.domain.model.ShipmentStatus.ARRIVED_AT_DESTINATION
+                            ShipmentStatus.IN_TRANSIT,
+                            ShipmentStatus.OUT_FOR_DELIVERY,
+                            ShipmentStatus.ARRIVED_AT_DESTINATION
                         )
                     }
-                    com.om.smartpost.customer.parcel.presentation.components.ParcelFilter.SENT -> {
+                    ParcelFilter.SENT -> {
                         shipment.currentStatus in listOf(
                             com.om.smartpost.customer.parcel.domain.model.ShipmentStatus.CREATED,
                             com.om.smartpost.customer.parcel.domain.model.ShipmentStatus.PENDING,

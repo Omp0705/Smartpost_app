@@ -47,7 +47,9 @@ fun ProfileScreen(
     events: Flow<ProfileEvent>,
     onAction: (ProfileAction) -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToAddAddress: () -> Unit
+    onNavigateToAddAddress: () -> Unit,
+    showAddress: Boolean = true,
+    showPreferences: Boolean = true
 ) {
 
 
@@ -76,37 +78,40 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 2. Addresses
-            AddressSection(
-                addresses = state.userProfile.addresses,
-                onAddClick = { onAction(ProfileAction.Address.OpenForNew) },
-                onAction = onAction
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            if (showAddress) {
+                AddressSection(
+                    addresses = state.userProfile.addresses,
+                    onAddClick = { onAction(ProfileAction.Address.OpenForNew) },
+                    onAction = onAction
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             // 3. Preferences Section
-            Text(
-                text = "Preferences",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            ProfileOptionItem(
-                icon = Icons.Default.Settings,
-                title = "Delivery Preferences",
-                subtitle = state.userProfile.deliveryPreferences?.let { prefs ->
-                     listOfNotNull(
-                        prefs.preferredDeliverySlot.label,
-                        if (prefs.leaveAtDoor) "Leave at door" else null,
-                        if (prefs.callBeforeDelivery) "Call before delivery" else null,
-                        prefs.deliveryNote
-                    ).joinToString(", ").ifEmpty { "None" }
-                } ?: "Configure preferences",
-                onClick = { onAction(ProfileAction.Preference.Open) }
-            )
+            if (showPreferences) {
+                Text(
+                    text = "Preferences",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                ProfileOptionItem(
+                    icon = Icons.Default.Settings,
+                    title = "Delivery Preferences",
+                    subtitle = state.userProfile.deliveryPreferences?.let { prefs ->
+                         listOfNotNull(
+                            prefs.preferredDeliverySlot.label,
+                            if (prefs.leaveAtDoor) "Leave at door" else null,
+                            if (prefs.callBeforeDelivery) "Call before delivery" else null,
+                            prefs.deliveryNote
+                        ).joinToString(", ").ifEmpty { "None" }
+                    } ?: "Configure preferences",
+                    onClick = { onAction(ProfileAction.Preference.Open) }
+                )
 
-             Spacer(modifier = Modifier.height(24.dp))
+                 Spacer(modifier = Modifier.height(24.dp))
+            }
              
              // ... Security ...
  

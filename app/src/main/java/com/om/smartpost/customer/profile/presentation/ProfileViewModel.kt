@@ -44,8 +44,7 @@ class ProfileViewModel(
 
             }
             is ProfileAction.ConfirmLogout -> {
-                _state.update { it.copy(isLogoutDialogVisible = false) }
-
+                logout()
             }
             is ProfileAction.DismissLogout -> {
                 _state.update { it.copy(isLogoutDialogVisible = false) }

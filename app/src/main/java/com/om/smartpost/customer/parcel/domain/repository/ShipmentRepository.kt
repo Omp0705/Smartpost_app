@@ -8,4 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface ShipmentRepository {
     suspend fun getAllShipments(): Flow<Result<List<Shipment>,ApiError>>
     suspend fun getShipmentById(id: String): Flow<Result<Shipment,ApiError>>
+    suspend fun updateShipmentTimeslot(shipmentId: String, newTimeslot: String): Result<Unit, ApiError>
 }

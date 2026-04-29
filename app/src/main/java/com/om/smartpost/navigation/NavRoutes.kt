@@ -18,4 +18,10 @@ object NavRoutes {
     const val CUSTOMER_SCHEDULE = "customer_schedule"
     const val CUSTOMER_PROFILE = "customer_profile"
     const val CUSTOMER_NOTIFICATIONS = "customer_notifications"
+
+    // Postman Routes
+    const val POSTMAN_PARCELS = "postman_parcels"
+    const val POSTMAN_ROUTE_TAB = "postman_route_tab"
+    const val POSTMAN_PROFILE = "postman_profile"
+    const val POSTMAN_PARCEL_DETAILS = "postman_parcel_details/{parcelId}"
 }

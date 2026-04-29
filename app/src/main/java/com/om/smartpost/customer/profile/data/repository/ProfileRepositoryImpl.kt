@@ -13,9 +13,11 @@ import com.om.smartpost.customer.profile.domain.model.DeliveryPreferences
 import com.om.smartpost.customer.profile.domain.model.ProfileError
 import com.om.smartpost.customer.profile.domain.model.UserProfile
 import com.om.smartpost.customer.profile.domain.repository.ProfileRepository
+import com.om.smartpost.core.data.local.TokenManager
 
 class ProfileRepositoryImpl(
-    private val remoteProfileDataSource: RemoteProfileDataSource
+    private val remoteProfileDataSource: RemoteProfileDataSource,
+    private val tokenManager: TokenManager
 ) : ProfileRepository {
 
     override suspend fun getUserProfile(): Result<UserProfile, ProfileError> {
@@ -86,6 +88,6 @@ class ProfileRepositoryImpl(
     }
 
     override suspend fun logout() {
-        // Implement logout logic (clear tokens, etc.)
+        tokenManager.clearTokens()
     }
 }

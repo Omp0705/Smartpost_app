@@ -35,4 +35,8 @@ class ShipmentRepositoryImpl(
             emit(Result.Error(ApiError.ServerError)) // Fallback if missing
         }
     }
+
+    override suspend fun updateShipmentTimeslot(shipmentId: String, newTimeslot: String): Result<Unit, ApiError> {
+        return remoteDataSource.updateShipmentTimeslot(shipmentId, newTimeslot)
+    }
 }

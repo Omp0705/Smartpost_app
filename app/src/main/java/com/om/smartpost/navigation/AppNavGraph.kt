@@ -87,11 +87,19 @@ fun AppNavGraph(
         }
         
         composable(NavRoutes.CUSTOMER_HOME) {
-            CustomerHomeScreen(onLogout = {})
+            CustomerHomeScreen(onLogout = {
+                navController.navigate(NavRoutes.AUTH) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                }
+            })
         }
         
         composable(NavRoutes.POSTMAN_HOME) {
-            PostmanHomeScreen(onLogout = {})
+            PostmanHomeScreen(onLogout = {
+                navController.navigate(NavRoutes.AUTH) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                }
+            })
         }
 
 

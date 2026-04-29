@@ -22,7 +22,7 @@ android {
     }
 
     buildTypes {
-        val ipAddress = "10.41.116.27"
+        val ipAddress = "172.28.208.1"
         release {
             isMinifyEnabled = false
             proguardFiles(

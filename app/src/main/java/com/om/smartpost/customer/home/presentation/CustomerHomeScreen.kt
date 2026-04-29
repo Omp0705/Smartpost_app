@@ -68,7 +68,7 @@ fun CustomerHomeScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-             CustomerNavGraph(navController = navController)
+             CustomerNavGraph(navController = navController, onLogout = onLogout)
         }
     }
 }

@@ -19,6 +19,7 @@ import com.om.smartpost.dashboard.domain.InfoRepository
 import com.om.smartpost.customer.parcel.domain.repository.ShipmentRepository
 import com.om.smartpost.customer.parcel.presentation.ParcelViewModel
 import com.om.smartpost.customer.parcel.presentation.details.ParcelDetailsViewModel
+import com.om.smartpost.customer.schedule.presentation.ScheduleViewModel
 import com.om.smartpost.dashboard.presentation.UserInfoViewModel
 import io.ktor.client.engine.cio.CIO
 import org.koin.android.ext.koin.androidContext
@@ -95,6 +96,12 @@ val appModule = module {
     
     viewModel<ParcelViewModel> {
         ParcelViewModel(
+            shipmentRepository = get()
+        )
+    }
+
+    viewModel<ScheduleViewModel> {
+        ScheduleViewModel(
             shipmentRepository = get()
         )
     }

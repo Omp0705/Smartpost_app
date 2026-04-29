@@ -25,7 +25,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CustomerNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    onLogout: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -109,11 +110,7 @@ fun CustomerNavGraph(
                 state = state,
                 events = viewModel.events,
                 onAction = viewModel::onAction,
-                onNavigateToLogin = {
-                    navController.navigate(NavRoutes.SIGN_IN) {
-                        popUpTo(NavRoutes.CUSTOMER_HOME) { inclusive = true }
-                    }
-                },
+                onNavigateToLogin = onLogout,
                 onNavigateToAddAddress = {
                     // Open Bottom Sheet or navigate
                 }
